@@ -1,6 +1,6 @@
 # AULA 01 – Atividades com ESP8266 / Arduino
 
-Nesta aula você irá desenvolver dois projetos utilizando botões e saídas digitais no ESP32 (ou Arduino compatível).
+Nesta aula você irá desenvolver dois projetos utilizando botões e saídas digitais no ESP8266 (ou Arduino compatível).
 
 ---
 
@@ -13,7 +13,7 @@ Criar um circuito com:
 - 1 LED RGB (ou 3 LEDs separados: vermelho, verde e azul)
 - 2 botões
 - Resistores apropriados
-- ESP32
+- ESP8266
 
 ###  Funcionamento esperado
 
@@ -48,7 +48,7 @@ Criar um contador numérico (0 a 9) utilizando:
 
 - 1 Display de 7 segmentos
 - 2 botões
-- ESP32
+- ESP8266
 - Resistores para os segmentos
 
 ### Funcionamento esperado
