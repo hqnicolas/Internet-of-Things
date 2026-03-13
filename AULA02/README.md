@@ -49,3 +49,5 @@ O relatório desta atividade será avaliado como a nota **N1A** (Peso: **3**).
 
 **Prazo de Entrega:**
 O relatório deverá ser entregue no AVA até **18:59 do dia 26/03 (Aula 05)**.
+
+---
