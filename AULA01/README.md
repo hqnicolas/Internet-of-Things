@@ -1,4 +1,4 @@
-# AULA 01 – Atividades com ESP32 / Arduino
+# AULA 01 – Atividades com ESP8266 / Arduino
 
 Nesta aula você irá desenvolver dois projetos utilizando botões e saídas digitais no ESP32 (ou Arduino compatível).
 
