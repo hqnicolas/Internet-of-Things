@@ -14,3 +14,4 @@
 - [Exercício01](./AULA02/leitura_dht11) – Leitura de DHT11 e LDR
 - [Exercício02](./AULA02/leitura_dht11_wifi) – Leitura de DHT11 e LDR com Wi-Fi (WPA Personal)
 - [Exercício03](./AULA02/leitura_dht11_wpa_enterprise_thingspeak) – Publicação de Dados no ThingSpeak (WPA Enterprise)
+- [Atividade 3](./AULA03/README.md) – Integração com APIs e Publicação em Nuvem
