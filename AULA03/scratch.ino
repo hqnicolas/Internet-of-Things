@@ -10,18 +10,17 @@
 
 DFRobot_DHT11 DHT;
 
-const char* ssid = "Turma IOT";
+const char* ssid = "Turma IoT";
 const char* password = "12345678";
 
-unsigned long myChannelNumber = 3297933;
-const char* myWriteAPIKey = "ALCJVVDR0XUOAG7O";
+unsigned long myChannelNumber = 3315384;
+const char* myWriteAPIKey = "LHVV7T5MQEYJ6XTX";
 
 WiFiClient client;
 
 const char* city = "Criciuma";
 const char* apiKey = "4c0156bd60f3c1b11a3e8ded166dcd99";
 
-// Função para conectar ao Wi-Fi
 void conectarWiFi() {
   Serial.print("Conectando ao Wi-Fi: ");
   Serial.println(ssid);
@@ -48,35 +47,34 @@ void conectarWiFi() {
 }
 
 float obterTemperaturaExterna() {
-  HTTPClient http;
-  String url = "http://api.openweathermap.org/data/2.5/weather?q=";
-  url += city;
-  url += "&appid=";
-  url += apiKey;
-  url += "&units=metric";
-
-  http.begin(url);
-  int httpCode = http.GET();
-  float tempExterna = -100;
-
-  if (httpCode > 0) {
-    String payload = http.getString();
-
-    DynamicJsonDocument doc(1024);
-    DeserializationError error = deserializeJson(doc, payload);
-
-    if (!error) {
-      tempExterna = doc["main"]["temp"];
+    HTTPClient http;
+    String url = "https://api.openweathermap.org/data/2.5/weather?q=";
+    url += city;
+    url += ",BR&units=metric&appid=";
+    url += apiKey;
+  
+    http.begin(url);
+    int httpCode = http.GET();
+    float tempExterna = -100;
+  
+    if (httpCode > 0) {
+      String payload = http.getString();
+  
+      DynamicJsonDocument doc(1024);
+      DeserializationError error = deserializeJson(doc, payload);
+  
+      if (!error) {
+        tempExterna = doc["main"]["temp"];
+      } else {
+        Serial.println("Erro ao interpretar JSON");
+      }
     } else {
-      Serial.println("Erro ao interpretar JSON");
+      Serial.print("Erro na requisição HTTP: ");
+      Serial.println(httpCode);
     }
-  } else {
-    Serial.print("Erro na requisição HTTP: ");
-    Serial.println(httpCode);
-  }
-
-  http.end();
-  return tempExterna;
+  
+    http.end();
+    return tempExterna;
 }
 
 void setup() {
