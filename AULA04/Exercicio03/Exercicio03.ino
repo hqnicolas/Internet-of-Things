@@ -2,8 +2,8 @@
 #include <WebServer.h>
 #include <DHT.h>
 
-const char *WIFI_SSID = "SEU_WIFI";
-const char *WIFI_PASSWORD = "SUA_SENHA";
+const char *SSID_AP = "ESP32_IoT_Aula04";
+const char *PASSWORD_AP = "12345678";
 
 const uint8_t DHT_PIN = 33;
 const uint8_t LDR_PIN = 39;
@@ -157,24 +157,14 @@ void handleNotFound() {
   server.send(404, "text/plain", "Rota nao encontrada.");
 }
 
-void connectToWiFi() {
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+void startAccessPoint() {
+  WiFi.mode(WIFI_AP);
+  WiFi.softAP(SSID_AP, PASSWORD_AP);
 
-  Serial.print("Conectando ao Wi-Fi");
-  unsigned long startAttempt = millis();
-  while (WiFi.status() != WL_CONNECTED && millis() - startAttempt < 20000) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println();
-
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.print("Conectado. IP: ");
-    Serial.println(WiFi.localIP());
-  } else {
-    Serial.println("Falha ao conectar no Wi-Fi. Ajuste SSID e senha.");
-  }
+  Serial.print("Rede Wi-Fi criada: ");
+  Serial.println(SSID_AP);
+  Serial.print("IP do Access Point: ");
+  Serial.println(WiFi.softAPIP());
 }
 
 void setup() {
@@ -187,7 +177,7 @@ void setup() {
   Serial.println();
   Serial.println("Exercicio 03 - WebServer de sensores");
 
-  connectToWiFi();
+  startAccessPoint();
 
   server.on("/", HTTP_GET, handleRoot);
   server.on("/sensores", HTTP_GET, handleSensors);
