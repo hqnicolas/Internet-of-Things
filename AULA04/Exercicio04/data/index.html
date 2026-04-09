@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SPIFFS Web Server</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">AULA 04</p>
+      <h1>Interface servida pelo SPIFFS</h1>
+      <p class="lead">
+        Este projeto demonstra como armazenar arquivos HTML, CSS e JavaScript
+        na flash do ESP32 e servi-los por um webserver sincronico.
+      </p>
+    </section>
+
+    <section class="panel">
+      <h2>Status do dispositivo</h2>
+      <dl id="info">
+        <div>
+          <dt>Placa</dt>
+          <dd>Carregando...</dd>
+        </div>
+        <div>
+          <dt>Armazenamento</dt>
+          <dd>Carregando...</dd>
+        </div>
+        <div>
+          <dt>Status</dt>
+          <dd>Carregando...</dd>
+        </div>
+        <div>
+          <dt>IP</dt>
+          <dd>Carregando...</dd>
+        </div>
+      </dl>
+      <button id="refreshButton" type="button">Atualizar dados</button>
+    </section>
+  </main>
+
+  <script src="/script.js"></script>
+</body>
+</html>
