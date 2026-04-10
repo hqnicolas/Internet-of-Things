@@ -2,8 +2,8 @@
 #include <WebServer.h>
 #include <SPIFFS.h>
 
-const char *WIFI_SSID = "SEU_WIFI";
-const char *WIFI_PASSWORD = "SUA_SENHA";
+const char *SSID_AP = "ESP32_IoT_Aula04";
+const char *PASSWORD_AP = "12345678";
 
 WebServer server(80);
 
@@ -52,7 +52,7 @@ void handleApiInfo() {
   json += "\"board\":\"ESP32 Dev Module\",";
   json += "\"storage\":\"SPIFFS\",";
   json += "\"status\":\"ok\",";
-  json += "\"ip\":\"" + WiFi.localIP().toString() + "\"";
+  json += "\"ip\":\"" + WiFi.softAPIP().toString() + "\"";
   json += "}";
 
   server.send(200, "application/json", json);
@@ -66,24 +66,14 @@ void handleNotFound() {
   server.send(404, "text/plain", "Arquivo ou rota nao encontrada.");
 }
 
-void connectToWiFi() {
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+void startAccessPoint() {
+  WiFi.mode(WIFI_AP);
+  WiFi.softAP(SSID_AP, PASSWORD_AP);
 
-  Serial.print("Conectando ao Wi-Fi");
-  unsigned long startAttempt = millis();
-  while (WiFi.status() != WL_CONNECTED && millis() - startAttempt < 20000) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println();
-
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.print("Conectado. IP: ");
-    Serial.println(WiFi.localIP());
-  } else {
-    Serial.println("Falha ao conectar no Wi-Fi. Ajuste SSID e senha.");
-  }
+  Serial.print("Rede Wi-Fi criada: ");
+  Serial.println(SSID_AP);
+  Serial.print("IP do Access Point: ");
+  Serial.println(WiFi.softAPIP());
 }
 
 void setup() {
@@ -100,7 +90,7 @@ void setup() {
 
   Serial.println("SPIFFS montado com sucesso.");
 
-  connectToWiFi();
+  startAccessPoint();
 
   server.on("/api/info", HTTP_GET, handleApiInfo);
   server.on("/", HTTP_GET, []() {

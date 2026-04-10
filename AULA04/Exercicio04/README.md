@@ -4,6 +4,7 @@
 Criar um webserver no ESP32 utilizando `SPIFFS` para armazenar e servir os arquivos da interface web, como `HTML`, `CSS` e `JavaScript`.
 
 Neste exercicio, o aluno deve separar a interface web do codigo principal do microcontrolador, deixando a pagina armazenada no sistema de arquivos interno do ESP32.
+O proprio ESP32 deve atuar como servidor web e criar a rede Wi-Fi para acesso direto pelo navegador.
 
 ## O que o programador deve fazer
 1. Configurar o projeto para usar:
@@ -11,17 +12,19 @@ Neste exercicio, o aluno deve separar a interface web do codigo principal do mic
    - `WebServer.h`
    - `SPIFFS.h`
 2. Inicializar o `SPIFFS` no `setup()`.
-3. Criar uma pasta de dados com os arquivos da interface web, por exemplo:
+3. Configurar o ESP32 em modo `WIFI_AP`.
+4. Criar uma pasta de dados com os arquivos da interface web, por exemplo:
    - `index.html`
    - `style.css`
    - `script.js`
-4. Fazer o upload desses arquivos para o sistema de arquivos do ESP32.
-5. Configurar o servidor para responder a rota `/` carregando o arquivo `index.html` salvo no `SPIFFS`.
-6. Servir tambem os arquivos estaticos de estilo e script, se forem utilizados.
-7. Manter o atendimento das requisicoes com `server.handleClient()` no `loop()`.
+5. Fazer o upload desses arquivos para o sistema de arquivos do ESP32.
+6. Configurar o servidor para responder a rota `/` carregando o arquivo `index.html` salvo no `SPIFFS`.
+7. Servir tambem os arquivos estaticos de estilo e script, se forem utilizados.
+8. Manter o atendimento das requisicoes com `server.handleClient()` no `loop()`.
 
 ## Requisitos minimos
 - O `SPIFFS` deve ser iniciado com sucesso
+- O ESP32 deve operar em modo `WIFI_AP`
 - A pagina principal deve ser lida a partir da memoria flash
 - O navegador deve carregar a interface sem que o HTML fique embutido diretamente no codigo C++
 - O servidor deve responder corretamente na porta `80`
@@ -92,12 +95,14 @@ O aluno pode reutilizar este exercicio para:
 ## Exemplo de comportamento esperado
 - O ESP32 inicia o `SPIFFS`
 - O monitor serial confirma que o sistema de arquivos foi montado
+- O ESP32 cria sua propria rede Wi-Fi
 - O servidor inicia normalmente
 - Ao acessar o IP do ESP32 no navegador, a pagina `index.html` carregada do `SPIFFS` e exibida
 - Se houver `CSS` e `JavaScript`, eles tambem sao carregados corretamente
 
 ## Checklist
 - O `SPIFFS.begin()` funciona sem erro
+- O ESP32 cria a rede Wi-Fi corretamente
 - Os arquivos foram enviados para a flash do ESP32
 - A rota `/` carrega `index.html`
 - O HTML nao esta hardcoded no firmware
