@@ -15,3 +15,8 @@
 - [Exercício02](./AULA02/leitura_dht11_wifi) – Leitura de DHT11 e LDR com Wi-Fi (WPA Personal)
 - [Exercício03](./AULA02/leitura_dht11_wpa_enterprise_thingspeak) – Publicação de Dados no ThingSpeak (WPA Enterprise)
 - [Atividade 3](./AULA03/README.md) – Integração com APIs e Publicação em Nuvem
+- [Atividade 4](./AULA04/README.md) – WebServer com ESP32
+- [Exercício01](./AULA04/Exercicio01) – ESP32 WebServer Hello World
+- [Exercício02](./AULA04/Exercicio02) – Webserver para LEDs da Shield
+- [Exercício03](./AULA04/Exercicio03) – Webserver informando valores dos sensores
+- [Exercício04](./AULA04/Exercicio04) – SPIFFS Web Server no ESP32
