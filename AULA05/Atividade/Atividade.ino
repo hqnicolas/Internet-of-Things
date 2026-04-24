@@ -12,9 +12,10 @@ static const uint8_t DHT_PIN = 33;
 static const uint8_t DHT_TYPE = DHT11;
 static const uint8_t LDR_PIN = 39;
 
-static const uint8_t LED_RED = 4;
-static const uint8_t LED_GREEN = 0;
-static const uint8_t LED_BLUE = 2;
+static const uint8_t LED_RED1 = 4;
+static const uint8_t LED_RED2 = 0;
+static const uint8_t LED_RED3 = 2;
+static const uint8_t LED_RED4 = 15;
 
 static const uint8_t RGB_RED = 25;
 static const uint8_t RGB_GREEN = 26;
@@ -48,7 +49,7 @@ struct SensorData {
 DHT dht(DHT_PIN, DHT_TYPE);
 AsyncWebServer server(80);
 
-bool ledStates[3] = {false, false, false};
+bool ledStates[4] = {false, false, false, false};
 uint8_t rgbValues[3] = {0, 0, 0};
 
 SensorData currentData;
@@ -66,8 +67,8 @@ const uint8_t DIGIT_PINS[2] = {
   DISPLAY_DEZENA, DISPLAY_UNIDADE
 };
 
-const uint8_t LED_PINS[3] = {
-  LED_RED, LED_GREEN, LED_BLUE
+const uint8_t LED_PINS[4] = {
+  LED_RED1, LED_RED2, LED_RED3, LED_RED4
 };
 
 const bool DIGIT_MAP[10][8] = {
@@ -127,7 +128,7 @@ void refreshDisplay() {
 }
 
 void setDiscreteLed(uint8_t index, bool state) {
-  if (index >= 3) {
+  if (index >= 4) {
     return;
   }
 
@@ -194,12 +195,14 @@ String buildJson() {
   json += ",\"luminosidade_bruta\":";
   json += String(currentData.ldrRaw);
   json += ",\"leds\":{";
-  json += "\"vermelho\":";
+  json += "\"led1\":";
   json += ledStates[0] ? "true" : "false";
-  json += ",\"verde\":";
+  json += ",\"led2\":";
   json += ledStates[1] ? "true" : "false";
-  json += ",\"azul\":";
+  json += ",\"led3\":";
   json += ledStates[2] ? "true" : "false";
+  json += ",\"led4\":";
+  json += ledStates[3] ? "true" : "false";
   json += "},\"rgb\":{";
   json += "\"r\":";
   json += String(rgbValues[0]);
@@ -327,7 +330,7 @@ String buildPage() {
 
     .button-row {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
     }
 
@@ -347,8 +350,6 @@ String buildPage() {
     }
 
     .btn-red { background: #d94a46; }
-    .btn-green { background: #1f8f62; }
-    .btn-blue { background: #2563c9; }
 
     .status-list {
       display: grid;
@@ -460,14 +461,16 @@ String buildPage() {
       <article class="card">
         <div class="label">LEDs Digitais</div>
         <div class="button-row">
-          <button class="btn-red" onclick="toggleLed(0)">LED Vermelho</button>
-          <button class="btn-green" onclick="toggleLed(1)">LED Verde</button>
-          <button class="btn-blue" onclick="toggleLed(2)">LED Azul</button>
+          <button class="btn-red" onclick="toggleLed(0)">LED 1</button>
+          <button class="btn-red" onclick="toggleLed(1)">LED 2</button>
+          <button class="btn-red" onclick="toggleLed(2)">LED 3</button>
+          <button class="btn-red" onclick="toggleLed(3)">LED 4</button>
         </div>
         <div class="status-list">
-          <div class="status-item"><span>Vermelho</span><span class="badge badge-off" id="led0">OFF</span></div>
-          <div class="status-item"><span>Verde</span><span class="badge badge-off" id="led1">OFF</span></div>
-          <div class="status-item"><span>Azul</span><span class="badge badge-off" id="led2">OFF</span></div>
+          <div class="status-item"><span>LED 1</span><span class="badge badge-off" id="led0">OFF</span></div>
+          <div class="status-item"><span>LED 2</span><span class="badge badge-off" id="led1">OFF</span></div>
+          <div class="status-item"><span>LED 3</span><span class="badge badge-off" id="led2">OFF</span></div>
+          <div class="status-item"><span>LED 4</span><span class="badge badge-off" id="led3">OFF</span></div>
         </div>
       </article>
 
@@ -486,10 +489,10 @@ String buildPage() {
   </main>
 
   <script>
-    function badge(on) {
-      return on
-        ? '<span class="badge badge-on">ON</span>'
-        : '<span class="badge badge-off">OFF</span>';
+    function setLedBadge(elementId, isOn) {
+      const element = document.getElementById(elementId);
+      element.textContent = isOn ? 'ON' : 'OFF';
+      element.className = isOn ? 'badge badge-on' : 'badge badge-off';
     }
 
     function updatePreview() {
@@ -509,9 +512,10 @@ String buildPage() {
         document.getElementById('ldrValue').textContent = `${data.luminosidade_percentual} %`;
         document.getElementById('displayValue').textContent = data.display.toString().padStart(2, '0');
 
-        document.getElementById('led0').outerHTML = badge(data.leds.vermelho).replace('badge', 'badge').replace('ON', data.leds.vermelho ? 'ON' : 'OFF');
-        document.getElementById('led1').outerHTML = badge(data.leds.verde).replace('badge', 'badge').replace('ON', data.leds.verde ? 'ON' : 'OFF');
-        document.getElementById('led2').outerHTML = badge(data.leds.azul).replace('badge', 'badge').replace('ON', data.leds.azul ? 'ON' : 'OFF');
+        setLedBadge('led0', data.leds.led1);
+        setLedBadge('led1', data.leds.led2);
+        setLedBadge('led2', data.leds.led3);
+        setLedBadge('led3', data.leds.led4);
 
         document.getElementById('sliderR').value = data.rgb.r;
         document.getElementById('sliderG').value = data.rgb.g;
@@ -529,7 +533,7 @@ String buildPage() {
 
     async function toggleLed(index) {
       await fetch(`/api/led?index=${index}`, { method: 'POST' });
-      loadData();
+      await loadData();
     }
 
     async function sendRgb() {
@@ -537,7 +541,7 @@ String buildPage() {
       const g = document.getElementById('sliderG').value;
       const b = document.getElementById('sliderB').value;
       await fetch(`/api/rgb?r=${r}&g=${g}&b=${b}`, { method: 'POST' });
-      loadData();
+      await loadData();
     }
 
     updatePreview();
@@ -597,7 +601,7 @@ void configureServer() {
     }
 
     int index = request->getParam("index")->value().toInt();
-    if (index < 0 || index > 2) {
+    if (index < 0 || index > 3) {
       request->send(400, "application/json", "{\"ok\":false,\"erro\":\"Indice de LED invalido\"}");
       return;
     }
@@ -632,7 +636,7 @@ void configureServer() {
 }
 
 void configurePins() {
-  for (uint8_t i = 0; i < 3; i++) {
+  for (uint8_t i = 0; i < 4; i++) {
     pinMode(LED_PINS[i], OUTPUT);
     setDiscreteLed(i, false);
   }
