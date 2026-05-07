@@ -33,6 +33,7 @@ constexpr unsigned long WIFI_CONNECT_TIMEOUT_MS = 20000;
 constexpr unsigned long WIFI_RETRY_INTERVAL_MS = 5000;
 constexpr unsigned long MQTT_RETRY_INTERVAL_MS = 5000;
 constexpr unsigned long BUTTON_DEBOUNCE_MS = 60;
+constexpr unsigned long SHARED_PIN_OUTPUT_TIME_US = 1500;
 
 WiFiClientSecure espClient;
 PubSubClient mqttClient(espClient);
@@ -55,6 +56,26 @@ char topicLed3[32];
 char topicLed4[32];
 char topicGroupAll[32];
 char topicGlobalAll[32];
+
+void configureSharedPinsAsInput() {
+  for (int i = 0; i < 4; i++) {
+    pinMode(BUTTON_PINS[i], INPUT_PULLUP);
+  }
+}
+
+void refreshSharedLedOutputs() {
+  if (!SHARE_LED_PINS_AS_BUTTONS) {
+    return;
+  }
+
+  for (int i = 0; i < 4; i++) {
+    pinMode(LED_PINS[i], OUTPUT);
+    digitalWrite(LED_PINS[i], ledStates[i] ? HIGH : LOW);
+  }
+
+  delayMicroseconds(SHARED_PIN_OUTPUT_TIME_US);
+  configureSharedPinsAsInput();
+}
 
 void buildTopics() {
   snprintf(topicLed1, sizeof(topicLed1), "satc/g%d/led1", GROUP_ID);
@@ -346,6 +367,10 @@ void setup() {
     }
   }
 
+  if (SHARE_LED_PINS_AS_BUTTONS) {
+    refreshSharedLedOutputs();
+  }
+
   buildTopics();
 
   Serial.println();
@@ -374,6 +399,7 @@ void setup() {
 }
 
 void loop() {
+  refreshSharedLedOutputs();
   maintainWiFiConnection();
   maintainMqttConnection();
   mqttClient.loop();
