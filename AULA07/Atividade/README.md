@@ -13,6 +13,14 @@ O objetivo é realizar o controle:
 - Global
 
 ---
+Hardware:
+
+- #define LED1 4
+- #define LED1 0
+- #define LED1 2
+- #define LED1 15
+
+---
 
 ## Configuração do Broker (HiveMQ)
 
