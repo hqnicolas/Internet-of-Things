@@ -1,139 +1,105 @@
-# Sistema IoT de Monitoramento e Controle Inteligente com Node-RED + ESP32
+# Aula 08 - Sistema IoT com Node-RED + ESP32
 
----
+## Visao Geral
 
-## 1. Objetivo Geral
+Esta aula propoe o desenvolvimento de um sistema IoT completo com **ESP32** como dispositivo de borda e **Node-RED** como camada de supervisao, visualizacao e automacao.
 
-Desenvolver uma solução completa de **Internet das Coisas (IoT)**, integrando dispositivos embarcados, protocolos de comunicação e sistemas de middleware, com foco na aplicação prática de conceitos estudados em sala.
+A entrega deve demonstrar:
 
-A atividade tem como objetivo principal promover o desenvolvimento de competências relacionadas a:
+- coleta de dados por sensores;
+- comunicacao em rede usando **MQTT**;
+- uso complementar de **HTTP WebServer**;
+- dashboard com dados em tempo real;
+- automacao e controle manual;
+- comunicacao bidirecional entre **ESP32** e **Node-RED**.
 
-* Projeto de sistemas distribuídos;
-* Integração entre hardware e software;
-* Comunicação entre dispositivos em rede;
-* Desenvolvimento de aplicações IoT orientadas a cenários reais.
+## Objetivos da Aula
 
-## 2. Descrição da Atividade
+- integrar hardware, firmware e middleware em um unico projeto;
+- aplicar o modelo `publish/subscribe` com MQTT;
+- organizar topicos, endpoints e fluxo de dados;
+- validar uma solucao IoT em um cenario proximo de uso real.
 
-Os alunos deverão desenvolver, em duplas, um sistema IoT funcional utilizando a plataforma **ESP32** como dispositivo de borda (*edge*), integrado ao **Node-RED** como ambiente de orquestração e visualização.
+## Requisitos Minimos
 
-A solução deverá contemplar:
+- usar o **ESP32** como dispositivo de borda;
+- coletar pelo menos **3 grandezas monitoradas**;
+- implementar **MQTT** obrigatoriamente;
+- implementar **HTTP WebServer** como segundo protocolo;
+- permitir controle de atuadores a partir de comandos externos;
+- construir um dashboard no **Node-RED** com visualizacao e automacao.
 
-* Coleta de dados por sensores;
-* Comunicação entre dispositivos;
-* Processamento e visualização de dados;
-* Implementação de lógica de automação.
+Observacao:
 
-## 3. Temas e Aplicações
+- o projeto `Smart Desk Ergonomica IoT` ja contempla `temperatura`, `umidade` e `luminosidade`;
+- se a avaliacao exigir **3 modulos fisicos distintos**, adicione um terceiro sensor e replique a mesma estrategia de telemetria.
 
-O sistema desenvolvido deverá simular uma aplicação real. Sugestões de contexto:
+## Estrutura da Pasta
 
-* Estufa inteligente;
-* Automação residencial;
-* Monitoramento ambiental;
-* Monitoramento industrial simplificado.
-* *Outros temas poderão ser utilizados mediante aprovação do professor.*
+```text
+AULA08/
+|-- README.md
+`-- Atividade/
+    |-- README.md
+    `-- ESP32/
+        `-- README.md
+```
 
-## 4. Requisitos Técnicos
+Descricao dos arquivos:
 
-### 4.1 Dispositivo ESP32 (Edge)
+- `AULA08/README.md`: enunciado resumido da aula e fluxo macro de execucao;
+- `AULA08/Atividade/README.md`: guia operacional completo do projeto `Smart Desk Ergonomica IoT`;
+- `AULA08/Atividade/ESP32/README.md`: referencia especifica do firmware, pinagem e validacao local.
 
-O sistema deve:
+## Como Executar a AULA08
 
-* Coletar dados de, no mínimo, **3 sensores distintos**, tais como:
-* Temperatura
-* Umidade
-* Luminosidade
-* Distância
+1. Leia o guia da atividade em [Atividade/README.md](./Atividade/README.md) para entender o projeto, os componentes e a estrategia de comunicacao.
+2. Monte o hardware com ESP32, sensores, botoes, displays, rele e LEDs de status.
+3. Prepare o ambiente com Arduino IDE ou PlatformIO, bibliotecas da placa, Node-RED e acesso ao Wi-Fi `SATC 2.4`.
+4. Configure o firmware com as credenciais WPA2 Enterprise, o identificador do grupo e os parametros de MQTT.
+5. Implemente e teste localmente a leitura de `temperatura`, `umidade` e `luminosidade`, alem do comportamento dos botoes e LEDs.
+6. Ative a comunicacao MQTT para publicar telemetria e receber comandos do Node-RED.
+7. Exponha um `HTTP WebServer` no ESP32 para consulta de status e ajuste basico de parametros.
+8. Monte o dashboard e a automacao no Node-RED, incluindo visualizacao, controle manual e pelo menos uma regra automatica.
+9. Execute os testes finais para comprovar a comunicacao bidirecional, a automacao e o funcionamento completo do sistema.
 
+## Convencoes de Comunicacao
 
-* Implementar comunicação utilizando:
-* **MQTT** (obrigatório)
-* **CoAP ou HTTP/WebServer** (obrigatório – escolher uma alternativa)
+- protocolo principal: **MQTT**
+- protocolo complementar: **HTTP WebServer**
+- broker sugerido: `broker.hivemq.com`
+- porta MQTT segura: `8883`
+- rede de laboratorio: `SATC 2.4` com `WPA2 Enterprise`
 
+Os topicos devem seguir um padrao por grupo no estilo da `AULA07`, agora separados por telemetria, comando e status. Os detalhes operacionais e os canais minimos esperados estao documentados em [Atividade/README.md](./Atividade/README.md).
 
-* Permitir o controle de **atuadores** (ex.: LEDs) a partir de comandos externos.
-
-### 4.2 Comunicação
-
-A solução deve demonstrar:
-
-* Uso do modelo *publish/subscribe* (MQTT);
-* Uso adicional de um segundo protocolo (CoAP ou HTTP);
-* Estrutura organizada de comunicação (tópicos, endpoints, etc.).
-
-### 4.3 Node-RED
-
-Deverá ser implementado:
-
-**a) Interface de visualização (Dashboard)**
-
-* Exibição dos dados dos sensores em tempo real;
-* Uso de gráficos, indicadores e/ou medidores.
-
-**b) Lógica de automação**
-
-* Implementação de pelo menos uma regra automatizada, por exemplo:
-* *Temperatura acima de determinado valor → acionar LED*
-* *Baixa luminosidade → acionar iluminação automática*
-
-
-
-**c) Controle manual**
-
-* Interface com controles para envio de comandos ao dispositivo:
-* Liga/desliga atuadores;
-* Ajuste de parâmetros (opcional).
-
-
-
-### 4.4 Integração
-
-O sistema deve garantir comunicação **bidirecional**:
-
-* Envio de dados do **ESP32 → Node-RED**
-* Recebimento de comandos do **Node-RED → ESP32**
-
-## 5. Diferenciais (Opcional)
-
-Serão considerados como diferenciais:
-
-* Comparação prática entre protocolos (MQTT vs CoAP/HTTP);
-* Persistência de dados (arquivo ou banco de dados);
-* Tratamento de falhas (reconexão, robustez);
-* Estrutura organizada de código e tópicos;
-* Implementação de medidas básicas de segurança.
-
-## 6. Cronograma
+## Cronograma
 
 | Data | Atividade |
 | --- | --- |
-| **14/05** | Apresentação da atividade e início do desenvolvimento |
-| **21/05** | Desenvolvimento em laboratório |
-| **28/05** | Entrega do relatório e realização da prova |
+| **14/05** | Apresentacao da atividade e inicio do desenvolvimento |
+| **21/05** | Desenvolvimento em laboratorio |
+| **28/05** | Entrega do relatorio e realizacao da prova |
 
-## 7. Entregáveis
+## Entregaveis
 
-### 7.1 Código Fonte
+### Codigo Fonte
 
-* Código do ESP32 (.ino ou .c);
-* Fluxo exportado do Node-RED (.json).
+- codigo do ESP32 (`.ino` ou `.c`);
+- fluxo exportado do Node-RED (`.json`).
 
-### 7.2 Relatório Técnico
+### Relatorio Tecnico
 
-O relatório deve conter:
+O relatorio deve conter:
 
-1. **Introdução:** Contexto do problema e objetivos da solução.
-2. **Arquitetura do Sistema:** Diagrama geral, tecnologias utilizadas e justificativas técnicas.
-3. **Implementação:** Descrição do funcionamento do ESP32, comunicação entre os componentes e fluxos do Node-RED.
-4. **Resultados e Testes:** Evidências de funcionamento, testes realizados e dificuldades encontradas.
-5. **Análise de Protocolos:** Comparação entre MQTT e CoAP/HTTP, vantagens e limitações observadas.
-6. **Conclusão:** Principais aprendizados e possíveis melhorias.
+1. Introducao com contexto e objetivo da solucao.
+2. Arquitetura do sistema com diagrama, tecnologias e justificativas.
+3. Implementacao do ESP32, da comunicacao e do fluxo no Node-RED.
+4. Resultados, testes e dificuldades encontradas.
+5. Analise comparativa entre MQTT e HTTP WebServer.
+6. Conclusao com aprendizados e melhorias futuras.
 
-## 8. Considerações Finais
+## Leitura Recomendada
 
-Espera-se que os alunos desenvolvam não apenas uma solução funcional, mas também demonstrem:
-
-* Capacidade de análise e tomada de decisão técnica;
-* Organização e clareza na implementação;
-* Visão sistêmica da solução proposta.
+- Guia completo da atividade: [Atividade/README.md](./Atividade/README.md)
+- Referencia do firmware ESP32: [Atividade/ESP32/README.md](./Atividade/ESP32/README.md)

@@ -1,0 +1,467 @@
+[
+  {
+    "id": "a08_tab",
+    "type": "tab",
+    "label": "AULA08 Smart Desk",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "a08_ui_tab",
+    "type": "ui_tab",
+    "name": "Smart Desk",
+    "icon": "dashboard",
+    "disabled": false,
+    "hidden": false
+  },
+  {
+    "id": "a08_ui_group_sensores",
+    "type": "ui_group",
+    "name": "Sensores",
+    "tab": "a08_ui_tab",
+    "order": 1,
+    "disp": true,
+    "width": "12",
+    "collapse": false
+  },
+  {
+    "id": "a08_ui_group_controle",
+    "type": "ui_group",
+    "name": "Controle",
+    "tab": "a08_ui_tab",
+    "order": 2,
+    "disp": true,
+    "width": "12",
+    "collapse": false
+  },
+  {
+    "id": "a08_ui_group_status",
+    "type": "ui_group",
+    "name": "Status",
+    "tab": "a08_ui_tab",
+    "order": 3,
+    "disp": true,
+    "width": "12",
+    "collapse": false
+  },
+  {
+    "id": "a08_tls",
+    "type": "tls-config",
+    "name": "HiveMQ TLS",
+    "cert": "",
+    "key": "",
+    "ca": "",
+    "certname": "",
+    "keyname": "",
+    "caname": "",
+    "servername": "",
+    "verifyservercert": false
+  },
+  {
+    "id": "a08_broker",
+    "type": "mqtt-broker",
+    "name": "HiveMQ 8883",
+    "broker": "broker.hivemq.com",
+    "port": "8883",
+    "clientid": "",
+    "autoConnect": true,
+    "usetls": true,
+    "protocolVersion": "4",
+    "keepalive": "60",
+    "cleansession": true,
+    "autoUnsubscribe": true,
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthRetain": "false",
+    "birthPayload": "",
+    "birthMsg": {},
+    "closeTopic": "",
+    "closeQos": "0",
+    "closeRetain": "false",
+    "closePayload": "",
+    "closeMsg": {},
+    "willTopic": "",
+    "willQos": "0",
+    "willRetain": "false",
+    "willPayload": "",
+    "willMsg": {},
+    "userProps": "",
+    "sessionExpiry": "",
+    "tls": "a08_tls"
+  },
+  {
+    "id": "a08_temp_in",
+    "type": "mqtt in",
+    "z": "a08_tab",
+    "name": "Temperatura",
+    "topic": "satc/g7/telemetry/temperature",
+    "qos": "0",
+    "datatype": "auto",
+    "broker": "a08_broker",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "x": 150,
+    "y": 80,
+    "wires": [
+      [
+        "a08_temp_gauge",
+        "a08_temp_debug"
+      ]
+    ]
+  },
+  {
+    "id": "a08_hum_in",
+    "type": "mqtt in",
+    "z": "a08_tab",
+    "name": "Umidade",
+    "topic": "satc/g7/telemetry/humidity",
+    "qos": "0",
+    "datatype": "auto",
+    "broker": "a08_broker",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "x": 130,
+    "y": 140,
+    "wires": [
+      [
+        "a08_hum_gauge"
+      ]
+    ]
+  },
+  {
+    "id": "a08_lux_in",
+    "type": "mqtt in",
+    "z": "a08_tab",
+    "name": "Luminosidade",
+    "topic": "satc/g7/telemetry/luminosity",
+    "qos": "0",
+    "datatype": "auto",
+    "broker": "a08_broker",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "x": 150,
+    "y": 220,
+    "wires": [
+      [
+        "a08_lux_chart",
+        "a08_store_lux",
+        "a08_lux_text"
+      ]
+    ]
+  },
+  {
+    "id": "a08_focus_in",
+    "type": "mqtt in",
+    "z": "a08_tab",
+    "name": "Estado do foco",
+    "topic": "satc/g7/status/focus",
+    "qos": "0",
+    "datatype": "auto",
+    "broker": "a08_broker",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "x": 150,
+    "y": 300,
+    "wires": [
+      [
+        "a08_focus_text",
+        "a08_store_focus"
+      ]
+    ]
+  },
+  {
+    "id": "a08_alert_in",
+    "type": "mqtt in",
+    "z": "a08_tab",
+    "name": "Alerta",
+    "topic": "satc/g7/status/alert",
+    "qos": "0",
+    "datatype": "auto",
+    "broker": "a08_broker",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "x": 110,
+    "y": 360,
+    "wires": [
+      [
+        "a08_alert_text"
+      ]
+    ]
+  },
+  {
+    "id": "a08_temp_gauge",
+    "type": "ui_gauge",
+    "z": "a08_tab",
+    "name": "Gauge Temperatura",
+    "group": "a08_ui_group_sensores",
+    "order": 1,
+    "width": "4",
+    "height": "4",
+    "gtype": "gage",
+    "title": "Temperatura",
+    "label": "C",
+    "format": "{{value}}",
+    "min": 0,
+    "max": 50,
+    "colors": [
+      "#00b500",
+      "#e6e600",
+      "#ca3838"
+    ],
+    "seg1": "20",
+    "seg2": "30",
+    "x": 420,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "a08_hum_gauge",
+    "type": "ui_gauge",
+    "z": "a08_tab",
+    "name": "Gauge Umidade",
+    "group": "a08_ui_group_sensores",
+    "order": 2,
+    "width": "4",
+    "height": "4",
+    "gtype": "gage",
+    "title": "Umidade",
+    "label": "%",
+    "format": "{{value}}",
+    "min": 0,
+    "max": 100,
+    "colors": [
+      "#ca3838",
+      "#e6e600",
+      "#00b500"
+    ],
+    "seg1": "30",
+    "seg2": "60",
+    "x": 410,
+    "y": 140,
+    "wires": []
+  },
+  {
+    "id": "a08_lux_chart",
+    "type": "ui_chart",
+    "z": "a08_tab",
+    "name": "Grafico Luminosidade",
+    "group": "a08_ui_group_sensores",
+    "order": 3,
+    "width": "8",
+    "height": "4",
+    "label": "Luminosidade",
+    "chartType": "line",
+    "legend": "false",
+    "xformat": "HH:mm:ss",
+    "interpolate": "linear",
+    "nodata": "",
+    "dot": false,
+    "ymin": "0",
+    "ymax": "100",
+    "removeOlder": "1",
+    "removeOlderPoints": "",
+    "removeOlderUnit": "3600",
+    "cutout": 0,
+    "useOneColor": false,
+    "useUTC": false,
+    "colors": [
+      "#1f77b4",
+      "#aec7e8",
+      "#ff7f0e"
+    ],
+    "outputs": 1,
+    "useDifferentColor": false,
+    "className": "",
+    "x": 440,
+    "y": 220,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "a08_lux_text",
+    "type": "ui_text",
+    "z": "a08_tab",
+    "group": "a08_ui_group_status",
+    "order": 1,
+    "width": "4",
+    "height": "1",
+    "name": "Texto Luminosidade",
+    "label": "Luminosidade",
+    "format": "{{msg.payload}} %",
+    "layout": "row-spread",
+    "x": 440,
+    "y": 260,
+    "wires": []
+  },
+  {
+    "id": "a08_focus_text",
+    "type": "ui_text",
+    "z": "a08_tab",
+    "group": "a08_ui_group_status",
+    "order": 2,
+    "width": "4",
+    "height": "1",
+    "name": "Texto Foco",
+    "label": "Modo",
+    "format": "{{msg.payload}}",
+    "layout": "row-spread",
+    "x": 430,
+    "y": 300,
+    "wires": []
+  },
+  {
+    "id": "a08_alert_text",
+    "type": "ui_text",
+    "z": "a08_tab",
+    "group": "a08_ui_group_status",
+    "order": 3,
+    "width": "4",
+    "height": "1",
+    "name": "Texto Alerta",
+    "label": "Alerta",
+    "format": "{{msg.payload}}",
+    "layout": "row-spread",
+    "x": 410,
+    "y": 360,
+    "wires": []
+  },
+  {
+    "id": "a08_light_switch",
+    "type": "ui_switch",
+    "z": "a08_tab",
+    "name": "Comando Luz",
+    "label": "Luminaria",
+    "tooltip": "",
+    "group": "a08_ui_group_controle",
+    "order": 1,
+    "width": "4",
+    "height": "1",
+    "passthru": true,
+    "decouple": "false",
+    "topic": "",
+    "style": "",
+    "onvalue": "ON",
+    "onvalueType": "str",
+    "onicon": "",
+    "oncolor": "",
+    "offvalue": "OFF",
+    "offvalueType": "str",
+    "officon": "",
+    "offcolor": "",
+    "animate": false,
+    "x": 150,
+    "y": 440,
+    "wires": [
+      [
+        "a08_light_out"
+      ]
+    ]
+  },
+  {
+    "id": "a08_light_out",
+    "type": "mqtt out",
+    "z": "a08_tab",
+    "name": "Publica comando de luz",
+    "topic": "satc/g7/cmd/light",
+    "qos": "",
+    "retain": "",
+    "respTopic": "",
+    "contentType": "",
+    "userProps": "",
+    "correl": "",
+    "expiry": "",
+    "broker": "a08_broker",
+    "x": 450,
+    "y": 440,
+    "wires": []
+  },
+  {
+    "id": "a08_store_focus",
+    "type": "function",
+    "z": "a08_tab",
+    "name": "Guarda foco e automatiza",
+    "func": "flow.set('focusState', msg.payload);\nconst lux = Number(flow.get('lastLux'));\nif (msg.payload !== 'FOCUS') {\n    msg.payload = 'OFF';\n    return [null, msg];\n}\nif (!Number.isNaN(lux) && lux < 40) {\n    msg.payload = 'ON';\n    return [null, msg];\n}\nmsg.payload = 'OFF';\nreturn [null, msg];",
+    "outputs": 2,
+    "timeout": "",
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 470,
+    "y": 320,
+    "wires": [
+      [],
+      [
+        "a08_light_out"
+      ]
+    ]
+  },
+  {
+    "id": "a08_store_lux",
+    "type": "function",
+    "z": "a08_tab",
+    "name": "Guarda lux e automatiza",
+    "func": "const lux = Number(msg.payload);\nflow.set('lastLux', lux);\nconst focus = flow.get('focusState') || 'IDLE';\nif (focus !== 'FOCUS') {\n    return [msg, null];\n}\nif (lux < 40) {\n    msg.payload = 'ON';\n} else {\n    msg.payload = 'OFF';\n}\nreturn [null, msg];",
+    "outputs": 2,
+    "timeout": "",
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 460,
+    "y": 200,
+    "wires": [
+      [
+        "a08_lux_debug"
+      ],
+      [
+        "a08_light_out"
+      ]
+    ]
+  },
+  {
+    "id": "a08_temp_debug",
+    "type": "debug",
+    "z": "a08_tab",
+    "name": "Debug Temperatura",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 450,
+    "y": 40,
+    "wires": []
+  },
+  {
+    "id": "a08_lux_debug",
+    "type": "debug",
+    "z": "a08_tab",
+    "name": "Debug Lux",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 740,
+    "y": 180,
+    "wires": []
+  }
+]

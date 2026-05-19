@@ -2,147 +2,186 @@
 
 **Foco:** produtividade, saude ocupacional e eficiencia energetica.
 
-Este projeto transforma uma mesa de trabalho comum em um sistema inteligente que monitora o ambiente, gerencia ciclos de concentracao e automatiza a iluminacao. Para a comunicacao MQTT, sera utilizado o broker publico `broker.hivemq.com`, seguindo o mesmo padrao adotado em [AULA07/Atividade/Atividade.ino](/c:/Users/nicolas.337911/Downloads/Internet-of-Things/AULA07/Atividade/Atividade.ino).
+Este projeto transforma uma mesa de trabalho comum em um sistema inteligente que monitora o ambiente, gerencia ciclos de concentracao e automatiza a iluminacao. A comunicacao principal usa o broker publico `broker.hivemq.com`, reaproveitando o padrao de rede e MQTT apresentado na [AULA07](../../AULA07/README.md) e detalhado no firmware em [ESP32/README.md](./ESP32/README.md).
 
----
+## 1. Objetivo Operacional
 
-## 1. Arquitetura do hardware
+Ao final da atividade, a dupla deve conseguir:
 
-O **ESP32** atua como dispositivo de borda, lendo sensores, processando regras locais e trocando mensagens com o broker MQTT.
+- ler `temperatura`, `umidade` e `luminosidade` no ESP32;
+- publicar os dados no broker MQTT;
+- mostrar os dados no dashboard do Node-RED;
+- controlar a luminaria por comando remoto;
+- executar pelo menos uma automacao;
+- disponibilizar um `HTTP WebServer` para consulta local do estado do sistema.
+
+Observacao:
+
+- o projeto ja cobre tres grandezas monitoradas;
+- se o professor exigir tres sensores fisicos distintos, adicione um terceiro modulo e publique a nova leitura com o mesmo padrao dos topicos abaixo.
+
+## 2. Checklist Inicial
+
+Antes de comecar, confirme que a dupla tem:
+
+- `1 ESP32`;
+- `1 DHT11`;
+- `1 LDR` com resistor para divisor de tensao;
+- `4 botoes`;
+- `1 rele` para a luminaria;
+- `4 LEDs` de status com resistores;
+- `1 conjunto de display` para exibir `00` a `99`;
+- protoboard, jumpers e alimentacao;
+- Arduino IDE ou PlatformIO configurado para ESP32;
+- bibliotecas `WiFi.h`, `WiFiClientSecure.h`, `PubSubClient.h`, `DHT.h`, `WebServer.h` e a biblioteca do display escolhido;
+- acesso ao Wi-Fi `SATC 2.4` com credenciais WPA2 Enterprise;
+- Node-RED funcionando na maquina de desenvolvimento;
+- acesso ao broker `broker.hivemq.com`.
+
+## 3. Arquitetura do Projeto
 
 ### Entradas
 
-* **DHT11:** leitura de temperatura e umidade relativa do ar.
-* **LDR (analogico):** medicao da luminosidade sobre a mesa.
-* **4 botoes digitais:**
-1. **Start/Pause:** inicia ou pausa o cronometro.
-2. **Reset:** reinicia o ciclo atual.
-3. **Toggle Display:** alterna a informacao mostrada nos displays.
-4. **Manual Override:** liga ou desliga a iluminacao manualmente.
+- `DHT11`: temperatura e umidade relativa do ar;
+- `LDR`: luminosidade sobre a mesa;
+- `Botao Start/Pause`: inicia ou pausa o cronometro;
+- `Botao Reset`: reinicia o ciclo atual;
+- `Botao Toggle Display`: alterna a informacao exibida;
+- `Botao Manual Override`: liga ou desliga a iluminacao manualmente.
 
 ### Saidas
 
-* **2 displays de 7 segmentos:** exibicao de valores de `00` a `99`.
-* **1 rele:** acionamento da luminaria.
-* **4 LEDs de status:**
-* **LED 1:** modo foco ativo.
-* **LED 2:** pausa em andamento.
-* **LED 3:** conexao Wi-Fi/MQTT ativa.
-* **LED 4:** alerta ambiental.
+- `Display`: exibicao de valores de `00` a `99`;
+- `Rele`: acionamento da luminaria;
+- `LED 1`: modo foco ativo;
+- `LED 2`: pausa em andamento;
+- `LED 3`: conexao Wi-Fi/MQTT ativa;
+- `LED 4`: alerta ambiental.
 
----
+### Papel de cada camada
 
-## 2. Conectividade de rede
+- `ESP32`: leitura dos sensores, botoes, regras locais, MQTT e HTTP;
+- `Broker MQTT`: troca de mensagens entre placa e Node-RED;
+- `Node-RED`: dashboard, automacoes, historico e comandos remotos.
 
-O ESP32 deve se conectar ao Wi-Fi institucional **`SATC 2.4`** usando **WPA2 Enterprise**, como no exemplo da aula 07.
+## 4. Convencoes de Comunicacao
 
-### Bibliotecas utilizadas
+### Wi-Fi
 
-* `WiFi.h`
-* `WiFiClientSecure.h`
-* `PubSubClient.h`
+O ESP32 deve se conectar ao Wi-Fi institucional `SATC 2.4` usando `WPA2 Enterprise`, como no exemplo da aula 07.
 
-### Credenciais de exemplo
+### MQTT
 
-```cpp
-const char *WIFI_SSID = "SATC 2.4";
-const char *EAP_IDENTITY = "aluno.123456@alunosatc.edu.br";
-const char *EAP_USERNAME = "aluno.123456@alunosatc.edu.br";
-const char *EAP_PASSWORD = "123456";
-```
+Configuracao recomendada:
 
-### Inicializacao da conexao
+- host: `broker.hivemq.com`
+- porta: `8883`
+- cliente: `WiFiClientSecure`
+- estrategia de laboratorio: `espClient.setInsecure()`
 
-```cpp
-WiFi.disconnect(true);
-WiFi.mode(WIFI_STA);
-WiFi.begin(WIFI_SSID, WPA2_AUTH_PEAP, EAP_IDENTITY, EAP_USERNAME, EAP_PASSWORD);
-```
+Padrao de topicos por grupo:
 
----
+| Funcao | Topico | Direcao | Payload esperado |
+| --- | --- | --- | --- |
+| Temperatura | `satc/gX/telemetry/temperature` | ESP32 -> Node-RED | valor numerico em `C` |
+| Umidade | `satc/gX/telemetry/humidity` | ESP32 -> Node-RED | valor numerico em `%` |
+| Luminosidade | `satc/gX/telemetry/luminosity` | ESP32 -> Node-RED | valor numerico bruto ou percentual |
+| Comando da luminaria | `satc/gX/cmd/light` | Node-RED -> ESP32 | `ON` ou `OFF` |
+| Estado do ciclo | `satc/gX/status/focus` | ESP32 -> Node-RED | `IDLE`, `FOCUS` ou `PAUSE` |
+| Alertas do sistema | `satc/gX/status/alert` | ESP32 -> Node-RED | `OK`, `WARN` ou `ALERT` |
 
-## 3. Comunicacao MQTT
+Substitua `gX` pelo numero do grupo, por exemplo `g7`.
 
-O projeto utilizara o broker publico **`broker.hivemq.com`** com cliente seguro baseado em `WiFiClientSecure`.
+Se a dupla quiser reaproveitar o modelo global da aula 07 para testes extras, pode adicionar topicos complementares como `satc/gX/cmd/all` ou `satc/all/all`, mas eles nao sao obrigatorios para esta atividade.
 
-### Configuracao base
+### HTTP WebServer
 
-```cpp
-const char *MQTT_HOST = "broker.hivemq.com";
-constexpr int MQTT_PORT = 8883;
+O segundo protocolo da atividade sera `HTTP WebServer`.
 
-WiFiClientSecure espClient;
-PubSubClient mqttClient(espClient);
-```
+Uso recomendado:
 
-### Observacoes importantes
+- pagina raiz `/` com resumo de sensores, estado do foco e estado da luminaria;
+- rota `/status` para consulta rapida do estado atual;
+- rota `/config` para ajuste de parametros simples, como tempo de foco e limite de luminosidade.
 
-* A porta utilizada sera **`8883`**, padrao para MQTT seguro.
-* O cliente seguro sera criado com **`WiFiClientSecure.h`**.
-* No exemplo atual da aula 07, o certificado nao e validado e o codigo usa:
+## 5. Etapas de Execucao
 
-```cpp
-espClient.setInsecure();
-```
+### 1. Montar o circuito
 
-Isso simplifica os testes em laboratorio, mas nao e o modelo ideal para producao.
+- conecte o `DHT11`, o `LDR`, os `4 botoes`, o `rele`, os `4 LEDs` e o display ao ESP32;
+- confira alimentacao, `GND` comum e resistores dos LEDs e do divisor do LDR;
+- escolha uma pinagem consistente e registre essa escolha no relatorio.
 
-### Estrategia de topicos
+Use a sugestao de firmware em [ESP32/README.md](./ESP32/README.md) para reduzir retrabalho.
 
-Seguindo o padrao da aula 07, os topicos podem ser organizados por grupo:
+### 2. Configurar o Wi-Fi WPA2 Enterprise
 
-* `satc/g7/led1`
-* `satc/g7/led2`
-* `satc/g7/led3`
-* `satc/g7/led4`
-* `satc/g7/all`
-* `satc/all/all`
+- copie para o firmware os campos `WIFI_SSID`, `EAP_IDENTITY`, `EAP_USERNAME` e `EAP_PASSWORD`;
+- mantenha `WiFi.mode(WIFI_STA)` e o `WiFi.begin(...)` no padrao da aula 07;
+- valide a conexao do ESP32 antes de prosseguir para o MQTT.
 
-Esse modelo permite:
+### 3. Configurar o MQTT
 
-* controlar dispositivos individualmente;
-* enviar comandos para todo o grupo;
-* compartilhar comandos globais entre todos os grupos.
+- defina `MQTT_HOST = "broker.hivemq.com"` e `MQTT_PORT = 8883`;
+- inicialize `WiFiClientSecure` e `PubSubClient`;
+- configure o `GROUP_ID` da dupla e monte os topicos do grupo;
+- publique primeiro uma mensagem de teste para garantir que a conexao com o broker esta correta.
 
----
+### 4. Implementar a telemetria dos sensores
 
-## 4. Estrategia da atividade
+- leia `temperatura` e `umidade` pelo `DHT11`;
+- leia `luminosidade` pela entrada analogica do `LDR`;
+- publique cada leitura em seu proprio topico;
+- normalize os intervalos de publicacao para evitar spam no broker;
+- reflita estados importantes no display e nos LEDs locais.
 
-Para cumprir os requisitos da disciplina, o projeto pode usar:
+### 5. Implementar comandos remotos para rele e LEDs
 
-1. **MQTT (obrigatorio):**
-* publicacao de dados de temperatura, umidade e luminosidade;
-* assinatura de topicos para comandos remotos, como acionamento da iluminacao ou troca de estado dos LEDs.
+- assine pelo menos o topico `satc/gX/cmd/light`;
+- trate payloads `ON` e `OFF`;
+- acione o `rele` e atualize a sinalizacao local quando um comando for recebido;
+- mantenha o `Manual Override` coerente com o ultimo estado aplicado.
 
-2. **HTTP WebServer (alternativa complementar):**
-* hospedagem de uma pagina simples no ESP32;
-* exibicao de status local;
-* configuracao de parametros, como tempo de foco e limites de luminosidade.
+### 6. Expor o HTTP WebServer
 
----
+- inicie o servidor HTTP somente depois do Wi-Fi estar conectado;
+- mostre na pagina raiz as leituras correntes e os estados `FOCUS`, `PAUSE` ou `IDLE`;
+- permita consultar rapidamente se a luminaria esta ligada e qual limite de luminosidade esta ativo;
+- se usar rota de configuracao, aplique validacao simples e reflita as alteracoes no estado HTTP e no Node-RED.
 
-## 5. Node-RED e automacao
+### 7. Criar o dashboard e as automacoes no Node-RED
 
-O **Node-RED** funcionara como camada de supervisao e automacao.
+- use `mqtt in` para `temperature`, `humidity`, `luminosity`, `focus` e `alert`;
+- monte gauges para temperatura e umidade;
+- monte grafico ou indicador para luminosidade;
+- adicione botao ou switch para publicar `ON` e `OFF` em `satc/gX/cmd/light`;
+- implemente pelo menos uma automacao, como:
+  - se a luminosidade cair abaixo do limite e o estado for `FOCUS`, publicar `ON` para a luminaria;
+  - se a umidade ficar abaixo de `30`, publicar ou exibir um alerta visual.
 
-### Possibilidades no dashboard
+### 8. Validar a comunicacao bidirecional
 
-* gauges para temperatura e umidade;
-* grafico historico da luminosidade;
-* botoes para envio de comandos MQTT;
-* indicadores de conexao e status do ciclo.
+- altere a luminosidade sobre o LDR e confira a atualizacao no Node-RED;
+- confirme que comandos enviados pelo dashboard acionam o rele na placa;
+- verifique se os LEDs de status refletem modo foco, pausa, conexao e alerta;
+- acesse a pagina HTTP do ESP32 pelo navegador e confira o mesmo estado visto no dashboard;
+- simule queda e retorno de conexao para validar reconexao de Wi-Fi e MQTT, se esse diferencial estiver implementado.
 
-### Regras de exemplo
+## 6. Resultado Esperado
 
-1. Se a luminosidade estiver abaixo de um limite e o modo foco estiver ativo, ligar a luminaria.
-2. Se a umidade ficar abaixo de `30%`, gerar alerta visual.
-3. Registrar eventos e leituras para analise posterior.
+Ao final da execucao, o sistema deve:
 
----
+- monitorar o ambiente da mesa em tempo real;
+- exibir as leituras no Node-RED;
+- permitir controle manual pelo dashboard;
+- automatizar a iluminacao com base nas regras definidas;
+- manter uma pagina HTTP local com o estado do sistema;
+- demonstrar claramente o fluxo `ESP32 -> MQTT -> Node-RED -> MQTT -> ESP32`.
 
-## 6. Diferenciais tecnicos
+## 7. Checklist de Entrega
 
-* reconexao automatica de Wi-Fi e MQTT;
-* uso de `WiFiClientSecure` para conexao com broker na porta `8883`;
-* organizacao de topicos por grupo;
-* possibilidade de operacao local mesmo durante instabilidades na rede.
+- firmware do ESP32 organizado e comentado;
+- topicos MQTT documentados com o numero correto do grupo;
+- fluxo exportado do Node-RED em `.json`;
+- evidencias de teste no dashboard e no HTTP WebServer;
+- relatorio tecnico com arquitetura, implementacao, testes e comparacao entre MQTT e HTTP WebServer.
