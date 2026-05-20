@@ -56,6 +56,7 @@ Descricao dos arquivos:
 1. Leia o guia da atividade em [Atividade/README.md](./Atividade/README.md) para entender o projeto, os componentes e a estrategia de comunicacao.
 2. Monte o hardware com ESP32, sensores, botoes, displays, rele e LEDs de status.
 3. Prepare o ambiente com Arduino IDE ou PlatformIO, bibliotecas da placa, Node-RED e acesso ao Wi-Fi `SATC 2.4`.
+   No Node-RED, instale o pacote `@flowfuse/node-red-dashboard` para suportar o dashboard usado no fluxo da atividade.
 4. Configure o firmware com as credenciais WPA2 Enterprise, o identificador do grupo e os parametros de MQTT.
 5. Implemente e teste localmente a leitura de `temperatura`, `umidade` e `luminosidade`, alem do comportamento dos botoes e LEDs.
 6. Ative a comunicacao MQTT para publicar telemetria e receber comandos do Node-RED.

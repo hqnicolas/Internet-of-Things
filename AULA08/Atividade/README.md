@@ -36,6 +36,7 @@ Antes de comecar, confirme que a dupla tem:
 - bibliotecas `WiFi.h`, `WiFiClientSecure.h`, `PubSubClient.h`, `DHT.h`, `WebServer.h` e a biblioteca do display escolhido;
 - acesso ao Wi-Fi `SATC 2.4` com credenciais WPA2 Enterprise;
 - Node-RED funcionando na maquina de desenvolvimento;
+- pacote `@flowfuse/node-red-dashboard` instalado no Node-RED;
 - acesso ao broker `broker.hivemq.com`.
 
 ## 3. Arquitetura do Projeto
@@ -151,6 +152,8 @@ Use a sugestao de firmware em [ESP32/README.md](./ESP32/README.md) para reduzir 
 
 ### 7. Criar o dashboard e as automacoes no Node-RED
 
+- instale o pacote `@flowfuse/node-red-dashboard` pela opcao `Manage palette` do Node-RED ou com `npm install @flowfuse/node-red-dashboard` na pasta do Node-RED;
+- importe o arquivo `fluxo-node-red.json` desta atividade depois da instalacao do pacote;
 - use `mqtt in` para `temperature`, `humidity`, `luminosity`, `focus` e `alert`;
 - monte gauges para temperatura e umidade;
 - monte grafico ou indicador para luminosidade;
