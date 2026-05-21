@@ -143,6 +143,8 @@ float lastPublishedTemperatureC = -1000.0f;
 float lastPublishedHumidityPercent = -1000.0f;
 int lastPublishedLdrPercent = -1;
 
+void publishTelemetryIfNeeded(bool force = false);
+
 void buildTopics() {
   snprintf(topicTemperature, sizeof(topicTemperature), "satc/g%d/telemetry/temperature", GROUP_ID);
   snprintf(topicHumidity, sizeof(topicHumidity), "satc/g%d/telemetry/humidity", GROUP_ID);
