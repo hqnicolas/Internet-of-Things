@@ -325,7 +325,7 @@
     "clickableArea": "switch",
     "passthru": true,
     "decouple": false,
-    "topic": "",
+    "topic": "satc/g7/cmd/light",
     "topicType": "msg",
     "style": "",
     "onvalue": "ON",

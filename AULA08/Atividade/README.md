@@ -126,6 +126,7 @@ Use a sugestao de firmware em [ESP32/README.md](./ESP32/README.md) para reduzir 
 - defina `MQTT_HOST = "broker.hivemq.com"` e `MQTT_PORT = 8883`;
 - inicialize `WiFiClientSecure` e `PubSubClient`;
 - configure o `GROUP_ID` da dupla e monte os topicos do grupo;
+- para resposta mais rapida em demonstracao, use intervalos curtos e controlados, como `500 ms` para telemetria, em vez de publicar sem limite;
 - publique primeiro uma mensagem de teste para garantir que a conexao com o broker esta correta.
 
 ### 4. Implementar a telemetria dos sensores

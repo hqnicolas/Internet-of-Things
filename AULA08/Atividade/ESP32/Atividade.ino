@@ -14,8 +14,8 @@ const char *MQTT_HOST = "broker.hivemq.com";
 constexpr int MQTT_PORT = 8883;
 const char *MQTT_USERNAME = "";
 const char *MQTT_PASSWORD = "";
-constexpr uint16_t MQTT_KEEP_ALIVE_SECONDS = 60;
-constexpr uint16_t MQTT_SOCKET_TIMEOUT_SECONDS = 20;
+constexpr uint16_t MQTT_KEEP_ALIVE_SECONDS = 15;
+constexpr uint16_t MQTT_SOCKET_TIMEOUT_SECONDS = 5;
 
 constexpr int GROUP_ID = 7;
 
@@ -47,13 +47,13 @@ constexpr bool DISPLAY_SEGMENT_ACTIVE_HIGH = true;
 constexpr bool DISPLAY_DIGIT_ACTIVE_LOW = true;
 
 constexpr unsigned long WIFI_CONNECT_TIMEOUT_MS = 20000;
-constexpr unsigned long WIFI_RETRY_INTERVAL_MS = 5000;
-constexpr unsigned long MQTT_RETRY_INTERVAL_MS = 5000;
-constexpr unsigned long BUTTON_DEBOUNCE_MS = 60;
+constexpr unsigned long WIFI_RETRY_INTERVAL_MS = 1500;
+constexpr unsigned long MQTT_RETRY_INTERVAL_MS = 1500;
+constexpr unsigned long BUTTON_DEBOUNCE_MS = 35;
 constexpr unsigned long SHARED_PIN_OUTPUT_TIME_US = 1500;
-constexpr unsigned long SENSOR_READ_INTERVAL_MS = 2000;
-constexpr unsigned long TELEMETRY_PUBLISH_INTERVAL_MS = 5000;
-constexpr unsigned long STATUS_PUBLISH_INTERVAL_MS = 5000;
+constexpr unsigned long SENSOR_READ_INTERVAL_MS = 500;
+constexpr unsigned long TELEMETRY_PUBLISH_INTERVAL_MS = 500;
+constexpr unsigned long STATUS_PUBLISH_INTERVAL_MS = 250;
 constexpr unsigned long DISPLAY_REFRESH_INTERVAL_US = 2500;
 
 constexpr int DEFAULT_LUMINOSITY_THRESHOLD = 40;
@@ -139,6 +139,9 @@ char topicAlertStatus[48];
 
 String lastPublishedFocus = "";
 String lastPublishedAlert = "";
+float lastPublishedTemperatureC = -1000.0f;
+float lastPublishedHumidityPercent = -1000.0f;
+int lastPublishedLdrPercent = -1;
 
 void buildTopics() {
   snprintf(topicTemperature, sizeof(topicTemperature), "satc/g%d/telemetry/temperature", GROUP_ID);
@@ -327,6 +330,22 @@ void publishStatusIfNeeded(bool force = false) {
   }
 }
 
+bool telemetryChangedEnough() {
+  if (lastPublishedLdrPercent != ldrPercent) {
+    return true;
+  }
+
+  if (fabs(temperatureC - lastPublishedTemperatureC) >= 0.1f) {
+    return true;
+  }
+
+  if (fabs(humidityPercent - lastPublishedHumidityPercent) >= 0.1f) {
+    return true;
+  }
+
+  return false;
+}
+
 void readSensors() {
   dht.read(DHT11_PIN);
   ldrRaw = analogRead(LDR_PIN);
@@ -345,10 +364,16 @@ void readSensors() {
 
   updateStatusLeds();
   applyLightingRule();
+  publishTelemetryIfNeeded();
+  publishStatusIfNeeded();
 }
 
-void publishTelemetry() {
+void publishTelemetryIfNeeded(bool force = false) {
   if (!mqttClient.connected()) {
+    return;
+  }
+
+  if (!force && !telemetryChangedEnough()) {
     return;
   }
 
@@ -362,6 +387,10 @@ void publishTelemetry() {
 
   snprintf(buffer, sizeof(buffer), "%d", ldrPercent);
   mqttClient.publish(topicLuminosity, buffer, true);
+
+  lastPublishedTemperatureC = temperatureC;
+  lastPublishedHumidityPercent = humidityPercent;
+  lastPublishedLdrPercent = ldrPercent;
 }
 
 void setFocusState(FocusState nextState) {
@@ -536,6 +565,7 @@ bool connectToMqttBroker() {
   }
 
   subscribeTopics();
+  publishTelemetryIfNeeded(true);
   publishStatusIfNeeded(true);
   return true;
 }
@@ -748,6 +778,7 @@ void setup() {
   if (wifiConnected) {
     startHttpServer();
     connectToMqttBroker();
+    readSensors();
   }
 
   focusStateChangedAtMs = millis();
@@ -772,7 +803,7 @@ void loop() {
 
   if (now - lastTelemetryPublishMs >= TELEMETRY_PUBLISH_INTERVAL_MS) {
     lastTelemetryPublishMs = now;
-    publishTelemetry();
+    publishTelemetryIfNeeded(true);
   }
 
   if (now - lastStatusPublishMs >= STATUS_PUBLISH_INTERVAL_MS) {
@@ -780,5 +811,5 @@ void loop() {
     publishStatusIfNeeded();
   }
 
-  delay(5);
+  delay(1);
 }

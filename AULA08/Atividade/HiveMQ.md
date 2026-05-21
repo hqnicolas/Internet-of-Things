@@ -45,6 +45,22 @@ Se estiver usando o FlowFuse Dashboard, primeiro instale:
 npm install @flowfuse/node-red-dashboard
 ```
 
+## Ajuste para atualizacao rapida
+
+Para deixar a atividade mais responsiva sem sobrecarregar tanto o broker publico:
+
+- leitura de sensores a cada `500 ms`;
+- publicacao de telemetria a cada `500 ms`;
+- publicacao de status a cada `250 ms`;
+- `keep alive` MQTT em `15 s`;
+- reconexao de Wi-Fi e MQTT a cada `1500 ms`.
+
+Observacao:
+
+- o `broker.hivemq.com` e publico e compartilhado;
+- taxas muito agressivas podem aumentar quedas, throttling ou reconexoes;
+- para demonstracao em aula, `500 ms` costuma ser um ponto de equilibrio melhor que publicar em loop continuo.
+
 ## Padrao de topicos
 
 Substitua `gX` pelo numero do seu grupo. Exemplo: `g7`.
