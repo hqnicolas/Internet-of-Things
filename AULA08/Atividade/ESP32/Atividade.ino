@@ -14,8 +14,8 @@ const char *MQTT_HOST = "broker.hivemq.com";
 constexpr int MQTT_PORT = 8883;
 const char *MQTT_USERNAME = "pomodoro.satc";
 const char *MQTT_PASSWORD = "pomodoro.satc";
-constexpr uint16_t MQTT_KEEP_ALIVE_SECONDS = 15;
-constexpr uint16_t MQTT_SOCKET_TIMEOUT_SECONDS = 5;
+constexpr uint16_t MQTT_KEEP_ALIVE_SECONDS = 60;
+constexpr uint16_t MQTT_SOCKET_TIMEOUT_SECONDS = 20;
 
 constexpr int GROUP_ID = 7;
 
