@@ -20,3 +20,8 @@
 - [Exercício02](./AULA04/Exercicio02) – Webserver para LEDs da Shield
 - [Exercício03](./AULA04/Exercicio03) – Webserver informando valores dos sensores
 - [Exercício04](./AULA04/Exercicio04) – SPIFFS Web Server no ESP32
+- [Exercício05](./AULA05/Atividade) – IoT Smart Control Center - ESP32
+- [Exercício06](./AULA06/Atividade) – Atividade CoAP com ESP32, LDR e LED
+- [Exercício07](./AULA07/Atividade) – Malha de Controle Industrial com MQTT
+- [Exercício08](./AULA08/Atividade) – Projeto: Smart Desk Ergonomica IoT
+- [Exercício04](./AULA09) – Lista de Exercícios – Internet das Coisas
